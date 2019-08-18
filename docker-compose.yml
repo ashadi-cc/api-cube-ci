@@ -1,0 +1,26 @@
+version: "3"
+services: 
+  db:
+    image: mariadb
+    environment: 
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=cubes
+    volumes: 
+      - ./db.sql:/docker-entrypoint-initdb.d/db.sql
+  app:
+    image: golang:1.12
+    environment: 
+      - APP_PORT=8080
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=password
+      - MYSQL_HOST=db
+      - MYSQL_PORT=3306
+      - MYSQL_DB=cubes
+    volumes: 
+      - ./:/app
+    working_dir: /app
+    command: ["./wait-for-it.sh", "db:3306", "--timeout=30", "--", "make", "run"]
+    ports: 
+      - "8080:8080"
+    depends_on: 
+      - db
