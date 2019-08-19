@@ -46,14 +46,14 @@ func (app *App) ImportXML() (int, error) {
 
 func (app *App) getLatestRate(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
-		RespondError(w, http.StatusBadRequest, "get request only")
+		RespondError(w, http.StatusBadRequest, newAPIError(errMethodNotAllowed))
 		return
 	}
 
 	payload, err := GetLatestRate(app.DB)
 
 	if err != nil {
-		RespondError(w, http.StatusInternalServerError, "interval server error")
+		RespondError(w, http.StatusInternalServerError, newAPIError(errInternalServerError))
 		return
 	}
 
@@ -62,14 +62,14 @@ func (app *App) getLatestRate(w http.ResponseWriter, r *http.Request) {
 
 func (app *App) getAnalizeReport(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
-		RespondError(w, http.StatusBadRequest, "get request only")
+		RespondError(w, http.StatusBadRequest, newAPIError(errMethodNotAllowed))
 		return
 	}
 
 	payload, err := GetAnalyzeRate(app.DB)
 
 	if err != nil {
-		RespondError(w, http.StatusInternalServerError, "interval server error")
+		RespondError(w, http.StatusInternalServerError, newAPIError(errInternalServerError))
 		return
 	}
 
@@ -78,13 +78,13 @@ func (app *App) getAnalizeReport(w http.ResponseWriter, r *http.Request) {
 
 func (app *App) getRateByDate(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
-		RespondError(w, http.StatusBadRequest, "get request only")
+		RespondError(w, http.StatusBadRequest, newAPIError(errMethodNotAllowed))
 		return
 	}
 
 	rdate := strings.TrimPrefix(r.URL.Path, "/rates/")
 	if rdate == "" {
-		RespondError(w, http.StatusBadRequest, "date is empty")
+		RespondError(w, http.StatusBadRequest, newAPIError(errBadRequest))
 		return
 	}
 
@@ -92,7 +92,7 @@ func (app *App) getRateByDate(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Printf("get rates by date %s got error: %s \n", rdate, err.Error())
-		RespondError(w, http.StatusInternalServerError, "interval server error")
+		RespondError(w, http.StatusInternalServerError, newAPIError(errInternalServerError))
 		return
 	}
 
