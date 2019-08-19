@@ -83,7 +83,7 @@ func (app *App) getRateByDate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rdate := strings.TrimPrefix(r.URL.Path, "/rates/")
-	if rdate == "" {
+	if !checkValidDate(rdate) {
 		RespondError(w, http.StatusBadRequest, newAPIError(errBadRequest))
 		return
 	}

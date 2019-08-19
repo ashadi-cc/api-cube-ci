@@ -26,6 +26,23 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
+func TestValidDateFunction(t *testing.T) {
+	date := "2019-01-02"
+	if v := checkValidDate(date); !v {
+		t.Fatalf("%s it should valid date", date)
+	}
+
+	date = "02-01-02"
+	if v := checkValidDate(date); v {
+		t.Fatalf("%s it should not valid date", date)
+	}
+
+	date = "yyyy-mm-dd"
+	if v := checkValidDate(date); v {
+		t.Fatalf("%s it should not valid date", date)
+	}
+}
+
 func TestDownloadXML(t *testing.T) {
 	_, err := downloadXML(URL)
 	if err != nil {
@@ -171,5 +188,13 @@ func TestGetRateByDate(t *testing.T) {
 	response := executeRequest(req)
 	if response.Code != http.StatusOK {
 		t.Fatalf("it should get status 200 but got %d", response.Code)
+	}
+}
+
+func TestGetRateByInvalidDate(t *testing.T) {
+	req, _ := http.NewRequest("GET", "/rates/YYYY-MM-DD", nil)
+	response := executeRequest(req)
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("it should get status 400 but got %d", response.Code)
 	}
 }

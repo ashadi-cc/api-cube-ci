@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -74,4 +75,9 @@ func RespondJSON(w http.ResponseWriter, status int, payload interface{}) {
 //RespondError send error response as json
 func RespondError(w http.ResponseWriter, code int, message ...*errorData) {
 	RespondJSON(w, code, map[string][]*errorData{"errors": message})
+}
+
+func checkValidDate(date string) bool {
+	re := regexp.MustCompile(`\d{4}-\d{2}-\d{2}`)
+	return re.MatchString(date)
 }
