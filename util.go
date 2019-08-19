@@ -56,19 +56,22 @@ func bulkCubeInsert(cubes []Cubes, db *sql.DB) error {
 func RespondJSON(w http.ResponseWriter, status int, payload interface{}) {
 	response, err := json.Marshal(payload)
 
+	w.Header().Set("Content-Type", "application/json")
+
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
-
+		errinternal := []*errorData{newAPIError(errInternalServerError)}
+		errMsg := map[string][]*errorData{"errors": errinternal}
+		r, _ := json.Marshal(errMsg)
+		w.Write([]byte(r))
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	w.Write([]byte(response))
 }
 
 //RespondError send error response as json
 func RespondError(w http.ResponseWriter, code int, message ...*errorData) {
-	RespondJSON(w, code, map[string][]*errorData{"error": message})
+	RespondJSON(w, code, map[string][]*errorData{"errors": message})
 }
