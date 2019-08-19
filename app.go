@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"database/sql"
@@ -125,4 +125,11 @@ func (app *App) Init() {
 func (app *App) Run() {
 	log.Printf("App listening on port %s \n", APP_PORT)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", APP_PORT), app.Handler))
+}
+
+//New create new App
+func New() *App {
+	LoadConfig()
+	api := &App{}
+	return api
 }

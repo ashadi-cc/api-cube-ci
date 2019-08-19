@@ -1,4 +1,4 @@
-package main
+package api
 
 //Rate model
 type Rate map[string]float32

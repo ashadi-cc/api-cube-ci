@@ -1,9 +1,10 @@
-package main
+package api
 
 import (
 	"database/sql"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 )
 
@@ -17,6 +18,12 @@ func executeRequest(req *http.Request) *httptest.ResponseRecorder {
 	rr := httptest.NewRecorder()
 	app.Handler.ServeHTTP(rr, req)
 	return rr
+}
+
+func TestMain(m *testing.M) {
+	LoadConfig()
+	code := m.Run()
+	os.Exit(code)
 }
 
 func TestDownloadXML(t *testing.T) {
@@ -139,7 +146,7 @@ func TestGetAnalizeRport(t *testing.T) {
 }
 
 func TestInitWebServer(t *testing.T) {
-	app = &App{}
+	app = New()
 	app.Init()
 }
 
