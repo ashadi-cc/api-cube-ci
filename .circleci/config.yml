@@ -20,16 +20,16 @@ jobs:
           command: |
             sudo apt-get install default-mysql-client
             mysql -h 127.0.0.1 -u root -ppassword cubes < db.sql
-      # - run: 
-      #     name: Running test
-      #     environment:
-      #       APP_PORT: 8080
-      #       MYSQL_USERNAME: root
-      #       MYSQL_PASSWORD: password
-      #       MYSQL_HOST: 127.0.0.1
-      #       MYSQL_PORT: 3306
-      #       MYSQL_DB: cubes
-      #     command: go test -v
+      - run: 
+          name: Running test
+          environment:
+            APP_PORT: 8080
+            MYSQL_USERNAME: root
+            MYSQL_PASSWORD: password
+            MYSQL_HOST: 127.0.0.1
+            MYSQL_PORT: 3306
+            MYSQL_DB: cubes
+          command: go test -v
 
 workflows:
   version: 2
