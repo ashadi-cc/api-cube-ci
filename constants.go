@@ -1,6 +1,6 @@
 package api
 
-//Error message
+//Error message constant
 const (
 	errInternalServerError = "unexpected_server_error"
 	errMethodNotAllowed    = "method_not_allowed"

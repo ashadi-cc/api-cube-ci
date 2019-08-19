@@ -8,17 +8,24 @@ import (
 	"strings"
 )
 
-//App wrapper
+//App Api wrapper
 type App struct {
 	DB      *sql.DB
 	Handler *http.ServeMux
+	Config  *Config
 }
 
-//ImportXML import xml from url
+//ImportXML Download XML and store to database
 func (app *App) ImportXML() (int, error) {
-	cubes, err := ParseXML(URL)
+	//downloax xml
+	b, err := downloadXML(app.Config.App.XMLUrl)
 	if err != nil {
-		return 0, fmt.Errorf("Could not download xml from %s, got error: %s", URL, err.Error())
+		return 0, fmt.Errorf("Could not download xml from %s, got error: %s", app.Config.App.XMLUrl, err.Error())
+	}
+
+	cubes, err := ParseXML(b)
+	if err != nil {
+		return 0, fmt.Errorf("Could not parse xml, got error: %s", err.Error())
 	}
 
 	split := 500
@@ -44,6 +51,7 @@ func (app *App) ImportXML() (int, error) {
 	return totalRecord, nil
 }
 
+//getLatestRate /rates/latest endpoint implementation
 func (app *App) getLatestRate(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		RespondError(w, http.StatusBadRequest, newAPIError(errMethodNotAllowed))
@@ -60,6 +68,7 @@ func (app *App) getLatestRate(w http.ResponseWriter, r *http.Request) {
 	RespondJSON(w, http.StatusOK, payload)
 }
 
+//getAnalizeReport /rates/analyze endpoint implementation
 func (app *App) getAnalizeReport(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		RespondError(w, http.StatusBadRequest, newAPIError(errMethodNotAllowed))
@@ -76,6 +85,7 @@ func (app *App) getAnalizeReport(w http.ResponseWriter, r *http.Request) {
 	RespondJSON(w, http.StatusOK, payload)
 }
 
+//getRateByDate /rates/YYYY-MM-DD endpoint implementation
 func (app *App) getRateByDate(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		RespondError(w, http.StatusBadRequest, newAPIError(errMethodNotAllowed))
@@ -100,6 +110,7 @@ func (app *App) getRateByDate(w http.ResponseWriter, r *http.Request) {
 
 }
 
+//setRouter Configure endpoint routes
 func (app *App) setRouter() {
 	app.Handler = http.NewServeMux()
 	app.Handler.HandleFunc("/rates/latest", app.getLatestRate)
@@ -107,29 +118,35 @@ func (app *App) setRouter() {
 	app.Handler.HandleFunc("/rates/analyze", app.getAnalizeReport)
 }
 
-//Init init database
+//Init run initial process
 func (app *App) Init() {
-	db, err := dbConnect()
+	//load configuration
+	app.Config = LoadConfig()
+
+	//attach database connection
+	db, err := dbConnect(app.Config.Db)
 	if err != nil {
 		log.Fatal(err)
 	}
 	app.DB = db
-	//start import
-	log.Println("Start importing rates from ", URL)
+
+	//start download and import XML on background
+	log.Println("Start importing rates from ", app.Config.App.XMLUrl)
 	go app.ImportXML()
+
+	//Configure endpoint routes
 	log.Println("Set router")
 	app.setRouter()
 }
 
-//Run web server
+//Run http web server
 func (app *App) Run() {
-	log.Printf("App listening on port %s \n", APP_PORT)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", APP_PORT), app.Handler))
+	log.Printf("App listening on port %s \n", app.Config.App.Port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", app.Config.App.Port), app.Handler))
 }
 
 //New create new App
 func New() *App {
-	LoadConfig()
 	api := &App{}
 	return api
 }

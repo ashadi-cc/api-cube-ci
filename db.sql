@@ -28,7 +28,7 @@ SET time_zone = "+00:00";
 -- Table structure for table `cubes`
 --
 
-CREATE TABLE `cubes` (
+CREATE TABLE IF NOT EXISTS `cubes` (
   `id` int(11) NOT NULL,
   `rate_date` date NOT NULL,
   `currency` varchar(16) NOT NULL,

@@ -12,6 +12,7 @@ var (
 	totalCubes int
 	DB         *sql.DB
 	app        *App
+	config     *Config
 )
 
 func executeRequest(req *http.Request) *httptest.ResponseRecorder {
@@ -21,7 +22,7 @@ func executeRequest(req *http.Request) *httptest.ResponseRecorder {
 }
 
 func TestMain(m *testing.M) {
-	LoadConfig()
+	config = LoadConfig()
 	code := m.Run()
 	os.Exit(code)
 }
@@ -44,14 +45,15 @@ func TestValidDateFunction(t *testing.T) {
 }
 
 func TestDownloadXML(t *testing.T) {
-	_, err := downloadXML(URL)
+	_, err := downloadXML(config.App.XMLUrl)
 	if err != nil {
-		t.Fatalf("it should download xml from %s but got error %s", URL, err.Error())
+		t.Fatalf("it should download xml from %s but got error %s", config.App.XMLUrl, err.Error())
 	}
 }
 
 func TestParseXML(t *testing.T) {
-	cubes, err := ParseXML(URL)
+	b, _ := downloadXML(config.App.XMLUrl)
+	cubes, err := ParseXML(b)
 	if err != nil {
 		t.Fatalf("Error message it should nil but got %s", err.Error())
 	}
@@ -79,7 +81,7 @@ func TestGetEnv(t *testing.T) {
 }
 
 func TestConnDatabase(t *testing.T) {
-	db, err := dbConnect()
+	db, err := dbConnect(config.Db)
 	if err != nil {
 		t.Fatalf("its should connected to mysql but got error : %s", err.Error())
 	}
@@ -102,12 +104,12 @@ func TestBulkInsertCubes(t *testing.T) {
 }
 
 func runImport(db *sql.DB, t *testing.T) {
-	app := &App{DB: DB}
+	app := &App{DB: DB, Config: config}
 
 	total, err := app.ImportXML()
 
 	if err != nil {
-		t.Fatalf("it should not error when import xml from %s, but got error: %s", URL, err.Error())
+		t.Fatalf("it should not error when import xml from %s, but got error: %s", config.App.XMLUrl, err.Error())
 	}
 
 	if total != totalCubes {
@@ -165,6 +167,8 @@ func TestGetAnalizeRport(t *testing.T) {
 func TestInitWebServer(t *testing.T) {
 	app = New()
 	app.Init()
+	//set test configuration
+	app.Config = config
 }
 
 func TestGetLatestRate(t *testing.T) {

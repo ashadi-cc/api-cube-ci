@@ -4,7 +4,7 @@ import (
 	"database/sql"
 )
 
-//GetRateByDate get rate by date
+//GetRateByDate pull exchange rates by given date from database
 func GetRateByDate(rdate string, db *sql.DB) (LatestResponse, error) {
 	response := LatestResponse{}
 	rows, err1 := db.Query("SELECT currency,rate FROM cubes WHERE rate_date = ? ORDER BY currency", rdate)
@@ -26,7 +26,7 @@ func GetRateByDate(rdate string, db *sql.DB) (LatestResponse, error) {
 	return response, nil
 }
 
-//GetLatestRate query
+//GetLatestRate pull latest exchange rate from database
 func GetLatestRate(db *sql.DB) (LatestResponse, error) {
 	var rdate string
 	err := db.QueryRow("SELECT rate_date FROM cubes ORDER BY rate_date DESC LIMIT 0,1").Scan(&rdate)
@@ -37,7 +37,7 @@ func GetLatestRate(db *sql.DB) (LatestResponse, error) {
 	return GetRateByDate(rdate, db)
 }
 
-//GetAnalyzeRate get analyze report of rate
+//GetAnalyzeRate pull the minimum, maximum and average exchange rates from database
 func GetAnalyzeRate(db *sql.DB) (AnalizeResponse, error) {
 	response := AnalizeResponse{}
 	sql := "SELECT MIN(rate) AS i, MAX(rate) AS a, AVG(rate) AS v, currency FROM cubes GROUP BY currency"

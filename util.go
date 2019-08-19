@@ -11,13 +11,14 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func dbConnect() (*sql.DB, error) {
+//dbConnect Connect to Mysql database
+func dbConnect(config *DbConfig) (*sql.DB, error) {
 	strCon := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
-		MYSQL_USERNAME,
-		MYSQL_PASSWORD,
-		MYSQL_HOST,
-		MYSQL_PORT,
-		MYSQL_DB,
+		config.Username,
+		config.Password,
+		config.Host,
+		config.Port,
+		config.Database,
 	)
 
 	db, err := sql.Open("mysql", strCon)
@@ -29,6 +30,7 @@ func dbConnect() (*sql.DB, error) {
 	return db, nil
 }
 
+// bulkCubeInsert store exchanges rates to database as bulk insert to speed up the process
 func bulkCubeInsert(cubes []Cubes, db *sql.DB) error {
 	if len(cubes) == 0 {
 		return fmt.Errorf("empty cubes %s", "0")
@@ -53,7 +55,7 @@ func bulkCubeInsert(cubes []Cubes, db *sql.DB) error {
 	return err
 }
 
-//RespondJSON send response as json
+//RespondJSON send response as json format
 func RespondJSON(w http.ResponseWriter, status int, payload interface{}) {
 	response, err := json.Marshal(payload)
 
@@ -77,6 +79,7 @@ func RespondError(w http.ResponseWriter, code int, message ...*errorData) {
 	RespondJSON(w, code, map[string][]*errorData{"errors": message})
 }
 
+//validating input should have format YYYY-MM-DD
 func checkValidDate(date string) bool {
 	re := regexp.MustCompile(`\d{4}-\d{2}-\d{2}`)
 	return re.MatchString(date)

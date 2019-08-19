@@ -6,32 +6,33 @@ import (
 	"net/http"
 )
 
-//Cube struct
+//Cube represent detail of Cubes node
 type Cube struct {
 	XMLName  xml.Name `xml:"Cube"`
 	Currency string   `xml:"currency,attr"`
 	Rate     float32  `xml:"rate,attr"`
 }
 
-//Cubes struct
+//Cubes represent detail of Parentcube node
 type Cubes struct {
 	XMLName xml.Name `xml:"Cube"`
 	Time    string   `xml:"time,attr"`
 	Rates   []Cube   `xml:"Cube"`
 }
 
-//ParentCube Struct
+//ParentCube represent main node of Cube
 type ParentCube struct {
 	XMLName xml.Name `xml:"Cube"`
 	Cubes   []Cubes  `xml:"Cube"`
 }
 
-//Envelope struct
+//Envelope represent root XML Node
 type Envelope struct {
 	XMLName xml.Name   `xml:"Envelope"`
 	Cube    ParentCube `xml:"Cube"`
 }
 
+//downloadXML download xml from given url
 func downloadXML(url string) ([]byte, error) {
 	resp, err := http.Get(url)
 	if err != nil {
@@ -42,12 +43,8 @@ func downloadXML(url string) ([]byte, error) {
 	return body, err
 }
 
-//ParseXML to string
-func ParseXML(url string) ([]Cubes, error) {
-	b, err := downloadXML(URL)
-	if err != nil {
-		return nil, err
-	}
+//ParseXML parse xml to cubes model
+func ParseXML(b []byte) ([]Cubes, error) {
 
 	e := Envelope{}
 
