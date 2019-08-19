@@ -1,0 +1,38 @@
+version: 2
+jobs:
+  build:
+    docker:
+      # specify the version
+      - image: circleci/golang:1.12
+      - image: circleci/mariadb
+        environment:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: cubes
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
+    steps:
+      - checkout
+      - run:
+          name: Waiting mysql to be ready
+          command: ./wait-for-it.sh 127.0.0.1:3306 --timeout=30
+      - run:
+          name: Install mysql CLI and run migration 
+          command: |
+            sudo apt-get install default-mysql-client
+            mysql -h 127.0.0.1 -u root -ppassword cubes < db.sql
+      # - run: 
+      #     name: Running test
+      #     environment:
+      #       APP_PORT: 8080
+      #       MYSQL_USERNAME: root
+      #       MYSQL_PASSWORD: password
+      #       MYSQL_HOST: 127.0.0.1
+      #       MYSQL_PORT: 3306
+      #       MYSQL_DB: cubes
+      #     command: go test -v
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
