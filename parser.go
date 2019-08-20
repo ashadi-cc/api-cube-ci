@@ -45,12 +45,9 @@ func downloadXML(url string) ([]byte, error) {
 
 //ParseXML parse xml to cubes model
 func ParseXML(b []byte) ([]Cubes, error) {
-
 	e := Envelope{}
-
 	if err := xml.Unmarshal(b, &e); err != nil {
 		return nil, err
 	}
-
 	return e.Cube.Cubes, nil
 }
