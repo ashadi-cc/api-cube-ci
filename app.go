@@ -110,7 +110,6 @@ func (app *App) setRouter() {
 
 //attach database connection
 func (app *App) setDatabase() {
-
 	db, err := dbConnect(app.Config.Db)
 	if err != nil {
 		log.Fatal(err)
@@ -131,7 +130,6 @@ func (app *App) Init() {
 	go app.ImportXML()
 
 	//Configure endpoint routes
-	log.Println("Set router")
 	app.setRouter()
 }
 
