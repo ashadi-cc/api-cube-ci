@@ -26,11 +26,11 @@ type Config struct {
 //LoadConfig set config variables from current process environment
 func LoadConfig() *Config {
 	dbConfig := DbConfig{
-		Username: getEnv("MYSQL_USERNAME", "root"),
-		Password: getEnv("MYSQL_PASSWORD", "password"),
+		Username: getEnv("MYSQL_USER", "root"),
+		Password: getEnv("MYSQL_ROOT_PASSWORD", "password"),
 		Host:     getEnv("MYSQL_HOST", "localhost"),
 		Port:     getEnv("MYSQL_PORT", "3308"),
-		Database: getEnv("MYSQL_DB", "cubes"),
+		Database: getEnv("MYSQL_DATABASE", "cubes"),
 	}
 
 	appConfig := AppConfig{
