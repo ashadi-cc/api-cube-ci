@@ -51,3 +51,21 @@ func ParseXML(b []byte) ([]Cubes, error) {
 	}
 	return e.Cube.Cubes, nil
 }
+
+//spit cubes
+func splitCubes(cubes []Cubes, split int) [][]Cubes {
+	result := [][]Cubes{}
+	for cubes != nil {
+		switch l := len(cubes); {
+		case l == 0:
+			cubes = nil
+		case l < split:
+			result = append(result, cubes)
+			cubes = nil
+		default:
+			result = append(result, cubes[:split])
+			cubes = cubes[split:]
+		}
+	}
+	return result
+}

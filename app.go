@@ -28,23 +28,13 @@ func (app *App) ImportXML() (int, error) {
 		return 0, fmt.Errorf("Could not parse xml, got error: %s", err.Error())
 	}
 
-	split := 500
-	tcubes := []Cubes{}
-	totalRecord := 0
+	splitCubes, totalRecord := splitCubes(cubes, 500), 0
 
-	for _, cube := range cubes {
-		tcubes = append(tcubes, cube)
-		if len(tcubes) >= split {
-			if err := bulkCubeInsert(tcubes, app.DB); err != nil {
-				log.Fatalf("Error when insert cubes %s", err.Error())
-			}
-			totalRecord += len(tcubes)
-			tcubes = nil
+	for _, c := range splitCubes {
+		if err := bulkCubeInsert(c, app.DB); err != nil {
+			log.Fatalf("Error when insert cubes %s", err.Error())
 		}
-	}
-
-	if err := bulkCubeInsert(tcubes, app.DB); err == nil {
-		totalRecord += len(tcubes)
+		totalRecord += len(c)
 	}
 
 	log.Println("import xml done!")

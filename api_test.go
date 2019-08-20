@@ -29,6 +29,38 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
+func TestSplitCubes(t *testing.T) {
+
+	if c := splitCubes(make([]Cubes, 0), 10); len(c) != 0 {
+		t.Fatalf("total cubes should get 0 but got %d", len(c))
+	}
+	if c := splitCubes(make([]Cubes, 3), 10); len(c) != 1 {
+		t.Fatalf("total cubes should get 0 but got %d", len(c))
+	}
+
+	if c := splitCubes(make([]Cubes, 10), 10); len(c) != 1 {
+		t.Fatalf("total cubes should get 0 but got %d", len(c))
+	}
+
+	if c := splitCubes(make([]Cubes, 20), 10); len(c) != 2 {
+		t.Fatalf("total cubes should get 0 but got %d", len(c))
+	}
+
+	if c := splitCubes(make([]Cubes, 11), 10); len(c) != 2 {
+		t.Fatalf("total cubes should get 0 but got %d", len(c))
+	}
+
+	c := splitCubes(make([]Cubes, 13), 10)
+
+	if l := len(c[0]); l != 10 {
+		t.Fatalf("total cubes[0], should 10 but got %d", l)
+	}
+
+	if l := len(c[1]); l != 3 {
+		t.Fatalf("total cubes[0], should 10 but got %d", l)
+	}
+}
+
 func TestValidDateFunction(t *testing.T) {
 	date := "2019-01-02"
 	if v := checkValidDate(date); !v {
