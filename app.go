@@ -118,17 +118,23 @@ func (app *App) setRouter() {
 	app.Handler.HandleFunc("/rates/analyze", app.getAnalizeReport)
 }
 
-//Init run initial process
-func (app *App) Init() {
-	//load configuration
-	app.Config = LoadConfig()
+//attach database connection
+func (app *App) setDatabase() {
 
-	//attach database connection
 	db, err := dbConnect(app.Config.Db)
 	if err != nil {
 		log.Fatal(err)
 	}
 	app.DB = db
+}
+
+//Init run initial process
+func (app *App) Init() {
+	//load configuration
+	app.Config = LoadConfig()
+
+	//set database
+	app.setDatabase()
 
 	//start download and import XML on background
 	log.Println("Start importing rates from ", app.Config.App.XMLUrl)
