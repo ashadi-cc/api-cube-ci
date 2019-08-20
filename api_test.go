@@ -35,19 +35,19 @@ func TestSplitCubes(t *testing.T) {
 		t.Fatalf("total cubes should get 0 but got %d", len(c))
 	}
 	if c := splitCubes(make([]Cubes, 3), 10); len(c) != 1 {
-		t.Fatalf("total cubes should get 0 but got %d", len(c))
+		t.Fatalf("total cubes should get 1 but got %d", len(c))
 	}
 
 	if c := splitCubes(make([]Cubes, 10), 10); len(c) != 1 {
-		t.Fatalf("total cubes should get 0 but got %d", len(c))
+		t.Fatalf("total cubes should get 1 but got %d", len(c))
 	}
 
 	if c := splitCubes(make([]Cubes, 20), 10); len(c) != 2 {
-		t.Fatalf("total cubes should get 0 but got %d", len(c))
+		t.Fatalf("total cubes should get 2 but got %d", len(c))
 	}
 
 	if c := splitCubes(make([]Cubes, 11), 10); len(c) != 2 {
-		t.Fatalf("total cubes should get 0 but got %d", len(c))
+		t.Fatalf("total cubes should get 2 but got %d", len(c))
 	}
 
 	c := splitCubes(make([]Cubes, 13), 10)
@@ -57,7 +57,7 @@ func TestSplitCubes(t *testing.T) {
 	}
 
 	if l := len(c[1]); l != 3 {
-		t.Fatalf("total cubes[0], should 10 but got %d", l)
+		t.Fatalf("total cubes[0], should 3 but got %d", l)
 	}
 }
 
