@@ -139,30 +139,30 @@ func TestBulkInsertCubes(t *testing.T) {
 
 func runImport(db *sql.DB, t *testing.T) {
 	app := &App{DB: DB, Config: config}
-
-	total, err := app.ImportXML()
-
+	_, err := app.ImportXML()
 	if err != nil {
 		t.Fatalf("it should not error when import xml from %s, but got error: %s", config.App.XMLUrl, err.Error())
-	}
-
-	if total != totalCubes {
-		t.Fatal("it should not return zero record when import xml")
 	}
 }
 
 func TestImportXML(t *testing.T) {
-
 	if _, err := DB.Exec("DELETE FROM cubes"); err != nil {
 		t.Fatalf("it should not error when erase cubes table %s", err.Error())
 	}
 
 	runImport(DB, t)
-
 }
 
 func TestDuplicateImport(t *testing.T) {
+	DB.QueryRow("SELECT COUNT(id) as t FROM cubes").Scan(&totalCubes)
 	runImport(DB, t)
+
+	var total int
+	DB.QueryRow("SELECT COUNT(id) as t FROM cubes").Scan(&total)
+	if total != totalCubes {
+		t.Fatalf("total its should %d but got %d", totalCubes, total)
+	}
+
 }
 
 func TestGetLatestResponse(t *testing.T) {

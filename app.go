@@ -97,7 +97,6 @@ func (app *App) getRateByDate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	RespondJSON(w, http.StatusOK, payload)
-
 }
 
 //setRouter Configure endpoint routes
