@@ -24,11 +24,11 @@ jobs:
           name: Running test
           environment:
             APP_PORT: 8080
-            MYSQL_USERNAME: root
-            MYSQL_PASSWORD: password
+            MYSQL_USER: root
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_DATABASE: cubes
             MYSQL_HOST: 127.0.0.1
             MYSQL_PORT: 3306
-            MYSQL_DB: cubes
           command: go test -v
 
 workflows:
