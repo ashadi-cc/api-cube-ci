@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
-
-	_ "github.com/go-sql-driver/mysql"
 )
 
 //dbConnect Connect to Mysql database

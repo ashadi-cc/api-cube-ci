@@ -1,6 +1,10 @@
 package main
 
-import "api"
+import (
+	"api"
+
+	_ "github.com/go-sql-driver/mysql"
+)
 
 func main() {
 	api := api.New()

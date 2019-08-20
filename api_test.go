@@ -6,6 +6,8 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var (
