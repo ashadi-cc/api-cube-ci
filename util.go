@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"regexp"
 	"strings"
@@ -64,12 +65,17 @@ func RespondJSON(w http.ResponseWriter, status int, payload interface{}) {
 		errinternal := []*errorData{newAPIError(errInternalServerError)}
 		errMsg := map[string][]*errorData{"errors": errinternal}
 		r, _ := json.Marshal(errMsg)
-		w.Write([]byte(r))
+		_, err := w.Write([]byte(r))
+		if err != nil {
+			log.Printf("Error writing to writer %s", err.Error())
+		}
 		return
 	}
 
 	w.WriteHeader(status)
-	w.Write([]byte(response))
+	if _, err := w.Write([]byte(response)); err != nil {
+		log.Printf("Error writing to writer %s", err.Error())
+	}
 }
 
 //RespondError send error response as json

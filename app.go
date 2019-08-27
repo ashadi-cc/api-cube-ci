@@ -15,17 +15,31 @@ type App struct {
 	Config  *Config
 }
 
+//ImportResult struct
+type ImportResult struct {
+	Total int
+	Error error
+}
+
+//ImportChan  channel
+type ImportChan chan ImportResult
+
 //ImportXML Download XML and store to database
-func (app *App) ImportXML() (int, error) {
+func (app *App) ImportXML(ch ImportChan) {
+	chanResult := ImportResult{}
 	//downloax xml
 	b, err := downloadXML(app.Config.App.XMLUrl)
 	if err != nil {
-		return 0, fmt.Errorf("Could not download xml from %s, got error: %s", app.Config.App.XMLUrl, err.Error())
+		chanResult.Total, chanResult.Error = 0, fmt.Errorf("Could not download xml from %s, got error: %s", app.Config.App.XMLUrl, err.Error())
+		ch <- chanResult
+		return
 	}
 
 	cubes, err := ParseXML(b)
 	if err != nil {
-		return 0, fmt.Errorf("Could not parse xml, got error: %s", err.Error())
+		chanResult.Total, chanResult.Error = 0, fmt.Errorf("Could not parse xml, got error: %s", err.Error())
+		ch <- chanResult
+		return
 	}
 
 	splitCubes, totalRecord := splitCubes(cubes, 500), 0
@@ -38,7 +52,8 @@ func (app *App) ImportXML() (int, error) {
 	}
 
 	log.Println("import xml done!")
-	return totalRecord, nil
+	chanResult.Total, chanResult.Error = totalRecord, nil
+	ch <- chanResult
 }
 
 //getLatestRate /rates/latest endpoint implementation
@@ -126,8 +141,9 @@ func (app *App) Init() {
 
 	//start download and import XML on background
 	log.Println("Start importing rates from ", app.Config.App.XMLUrl)
-	go app.ImportXML()
-
+	ch := make(ImportChan)
+	go app.ImportXML(ch)
+	<-ch
 	//Configure endpoint routes
 	app.setRouter()
 }

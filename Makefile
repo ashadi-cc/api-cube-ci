@@ -9,3 +9,6 @@ down:
 
 dep:
 	go get -d ./...
+
+lint:
+	golangci-lint run -v
